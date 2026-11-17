@@ -22,7 +22,8 @@ from . import __version__
 
 log = logging.getLogger(__name__)
 
-DEFAULT_USER_AGENT = f"remote-radar/{__version__} (+https://github.com/remote-radar)"
+REPOSITORY_URL = "https://github.com/statemilbay-cyber/remote-radar"
+DEFAULT_USER_AGENT = f"remote-radar/{__version__} (+{REPOSITORY_URL})"
 _RETRY_STATUS = frozenset({408, 425, 429, 500, 502, 503, 504})
 
 

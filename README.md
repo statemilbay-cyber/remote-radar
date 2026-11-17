@@ -26,6 +26,8 @@ $ uv run radar run --profile me.local.toml --top 3
 Most of the 1,406 excluded roles are open only to residents of specific countries; the
 dashboard keeps them, each with the rule that excluded it.
 
+Live dashboard: https://statemilbay-cyber.github.io/remote-radar/ (rebuilt every morning by GitHub Actions)
+
 ## Why it exists
 
 Remote job boards overlap heavily, hide "who can apply" in free text, and quote pay in a
@@ -48,7 +50,7 @@ dozen formats. Remote Radar makes that part deterministic and auditable:
 Requires Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone https://github.com/OWNER/remote-radar.git
+git clone https://github.com/statemilbay-cyber/remote-radar.git
 cd remote-radar
 uv sync
 uv run radar run --top 15
