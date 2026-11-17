@@ -1,0 +1,23 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# runtime output
+.cache/
+data/
+site/
+
+# personal profiles
+*.local.toml
+
+# end-to-end tests
+e2e/node_modules/
+e2e/.site/
+e2e/playwright-report/
+e2e/test-results/
+site-demo/

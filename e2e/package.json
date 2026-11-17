@@ -1,0 +1,15 @@
+{
+  "name": "remote-radar-e2e",
+  "private": true,
+  "description": "Playwright end-to-end tests for the Remote Radar dashboard",
+  "scripts": {
+    "build:site": "cd .. && uv run radar demo --out e2e/.site",
+    "test": "npm run build:site && playwright test",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1",
+    "@types/node": "26.6.6",
+    "typescript": "7.0.2"
+  }
+}

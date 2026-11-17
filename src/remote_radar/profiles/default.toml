@@ -1,0 +1,178 @@
+# Remote Radar · default profile
+#
+# Copy this file, edit it, and run:   radar run --profile my.local.toml
+# Unknown keys are rejected, so a typo fails loudly instead of being ignored.
+
+[candidate]
+# Your UTC offset (6 for UTC+6, -5 for New York in winter).
+utc_offset = 0
+# How far, in hours, a role's working timezone may be from yours.
+max_timezone_gap = 6
+# The country you legally live and work from, spelled the way job boards do ("Georgia").
+# Empty: any role limited to a short list of countries counts as closed to you.
+country = ""
+# Regions you can legally work from. "worldwide" matches roles open to everyone.
+# Add "europe", "apac", "emea", ... only if you can actually be hired there.
+regions = ["worldwide"]
+# Minimum acceptable gross pay, USD per month.
+min_monthly_usd = 1500
+# Roles asking for more years of experience than this are pushed down the list.
+max_required_years = 5
+# Engagement types, most preferred first.
+engagement_preference = ["contract", "part_time", "full_time"]
+# Small boost for Web3 / crypto companies.
+prefer_web3 = false
+
+[filters]
+# Titles containing any of these are not engineering roles and are never shown.
+exclude_titles = [
+  "account executive", "account manager", "sales", "business development", "marketing",
+  "growth marketer", "seo", "recruiter", "recruiting", "talent", "customer success",
+  "customer support", "support specialist", "support agent", "designer", "copywriter",
+  "content writer", "writer", "editor", "nurse", "physician", "therapist", "teacher", "tutor",
+  "accountant", "bookkeeper", "paralegal", "attorney", "lawyer", "counsel", "human resources",
+  "people partner", "office manager", "executive assistant", "virtual assistant", "data entry",
+  "product manager", "project manager", "program manager", "scrum master", "community manager",
+  "social media",
+]
+# Engineering specialisms outside the tracks below. Such titles pass only when they also
+# name a track term ("DevOps / Python Engineer" passes, "Senior DevOps Engineer" does not).
+off_track_titles = [
+  "devops", "sre", "site reliability", "platform engineer", "infrastructure", "cloud engineer",
+  "ios", "android", "mobile", "flutter", "react native", "embedded", "firmware", "hardware",
+  "game", "unity", "unreal", "salesforce", "sap", "mainframe", "security engineer",
+  "network engineer", "machine learning", "ml engineer", "data scientist", "research scientist",
+  "computer vision", "golang", "go engineer", "rust", "java", "c++", ".net", "php", "ruby",
+  "rails", "magento", "wordpress", "solidity", "expert",
+]
+# Talent networks and AI-training marketplaces: legitimate, but every placement goes through
+# multi-stage vetting with live interviews. Flagged and pushed down, not hidden.
+talent_networks = [
+  "toptal", "lemon.io", "proxify", "micro1", "turing", "andela", "arc.dev", "mercor",
+  "opentrain", "outlier", "mindrift", "dataannotation", "alignerr", "braintrust", "x-team",
+  "gun.io", "g2i", "crossover", "silver.dev",
+]
+
+[tracks.qa_automation]
+label = "QA Automation · Playwright / TypeScript"
+short = "QA"
+title_terms = [
+  "qa", "sdet", "quality engineer", "quality assurance", "test engineer", "test automation",
+  "automation tester", "qa automation", "software tester",
+]
+
+[tracks.qa_automation.keywords]
+playwright = 6
+"test automation" = 4
+"qa automation" = 4
+sdet = 4
+"automated tests" = 3
+"automated testing" = 3
+cypress = 2
+selenium = 2
+e2e = 2
+"end-to-end" = 2
+"api testing" = 2
+regression = 1
+typescript = 1
+"github actions" = 1
+"ci/cd" = 1
+k6 = 1
+postman = 1
+
+[tracks.python_data]
+label = "Python · data pipelines, scraping, backend & bots"
+short = "Python"
+title_terms = [
+  "python", "data engineer", "data engineering", "etl", "scraping", "scraper", "crawler",
+  "django", "fastapi", "flask", "data pipeline",
+]
+
+[tracks.python_data.keywords]
+python = 4
+"web scraping" = 5
+scraping = 5
+scrapy = 4
+crawler = 3
+"data pipeline" = 4
+"data pipelines" = 4
+etl = 3
+elt = 2
+airflow = 2
+dagster = 2
+dbt = 2
+fastapi = 3
+django = 2
+flask = 2
+sql = 2
+postgresql = 1
+postgres = 1
+pandas = 2
+polars = 2
+"telegram bot" = 4
+aiogram = 4
+asyncio = 1
+
+[tracks.fullstack_apps]
+label = "Full-stack · web & Telegram apps"
+short = "Full-stack"
+title_terms = [
+  "full stack", "full-stack", "fullstack", "frontend", "front-end", "front end",
+  "web developer", "react", "next.js", "typescript", "javascript", "node.js", "mini app",
+]
+
+[tracks.fullstack_apps.keywords]
+typescript = 3
+react = 3
+"next.js" = 3
+nextjs = 3
+"node.js" = 2
+nodejs = 2
+telegram = 3
+"telegram mini app" = 5
+"mini app" = 4
+"mini apps" = 4
+tailwind = 1
+supabase = 2
+prisma = 1
+trpc = 1
+vue = 1
+svelte = 1
+postgresql = 1
+
+[tracks.integrations]
+label = "Systems & workflow integration"
+short = "Integrations"
+title_terms = [
+  "integration", "integrations", "automation engineer", "automation developer", "workflow",
+  "solutions engineer", "implementation engineer", "ai engineer", "ai automation", "low-code",
+  "no-code", "zapier", "n8n",
+]
+
+[tracks.integrations.keywords]
+n8n = 6
+zapier = 5
+"make.com" = 5
+"workflow automation" = 5
+"business process automation" = 4
+integrations = 3
+"api integration" = 4
+"api integrations" = 4
+webhook = 3
+webhooks = 3
+"rest api" = 2
+"rest apis" = 2
+graphql = 1
+llm = 2
+llms = 2
+openai = 2
+anthropic = 2
+claude = 2
+rag = 2
+"ai agent" = 3
+"ai agents" = 3
+hubspot = 2
+salesforce = 1
+airtable = 3
+retool = 2
+ipaas = 3

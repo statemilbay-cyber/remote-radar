@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Remote Radar</title>
+<meta name="description" content="Remote engineering roles ranked against a candidate profile. Updated daily.">
+<style>
+  :root {
+    --bg: #f6f6f3; --panel: #ffffff; --text: #1d1d1b; --muted: #6a6a64; --line: #e4e3dd;
+    --accent: #2c6e49; --accent-soft: #e2efe6; --warn: #8a5a00; --warn-soft: #f8edd8;
+    --bad: #a23b3b; --bad-soft: #f6e2e2; --chip: #efeee9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131312; --panel: #1c1c1a; --text: #ebeae4; --muted: #9b9a93; --line: #2d2d2a;
+      --accent: #79c29a; --accent-soft: #1d3127; --warn: #e3aa55; --warn-soft: #382b15;
+      --bad: #e48a8a; --bad-soft: #3a1f1f; --chip: #262624;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 16px 48px; }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 22px 0; }
+  .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .kpi b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
+  .kpi span { color: var(--muted); font-size: 13px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+  .controls input[type=search], .controls select { background: var(--panel); color: var(--text);
+         border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: inherit; }
+  .controls input[type=search] { flex: 1 1 240px; min-width: 0; }
+  .controls label { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 6px; }
+  .count { margin-left: auto; color: var(--muted); font-size: 14px; }
+  .table-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; white-space: nowrap; }
+  tr.job { cursor: pointer; }
+  tr.job:hover td { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+  tr.excluded td { opacity: .55; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .score { display: inline-block; min-width: 38px; text-align: center; border-radius: 6px; padding: 2px 6px;
+           font-weight: 700; background: var(--chip); }
+  .score.hi { background: var(--accent-soft); color: var(--accent); }
+  .score.mid { background: var(--warn-soft); color: var(--warn); }
+  .role a { color: var(--text); font-weight: 600; text-decoration: none; }
+  .role a:hover { text-decoration: underline; }
+  .company { color: var(--muted); font-size: 13px; }
+  .chip { display: inline-block; background: var(--chip); border-radius: 999px; padding: 1px 8px; font-size: 12px; white-space: nowrap; }
+  tr.details td { background: var(--bg); font-size: 14px; }
+  tr.details ul { margin: 4px 0 8px; padding-left: 18px; }
+  .flag { color: var(--bad); }
+  footer { margin-top: 28px; color: var(--muted); font-size: 13px; }
+  footer a { color: inherit; }
+  @media (max-width: 760px) {
+    .hide-sm { display: none; }
+    th, td { padding: 9px 8px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Remote Radar</h1>
+    <p>Updated {{ generated_at.strftime("%d %b %Y, %H:%M") }} UTC · {{ stats.scanned }} unique roles from {{ sources|length }} sources</p>
+  </header>
+
+  <section class="kpis" aria-label="Summary">
+    <div class="kpi"><b>{{ stats.eligible }}</b><span>roles match the profile</span></div>
+    <div class="kpi"><b>{{ stats.contract }}</b><span>of them contract or part-time</span></div>
+    <div class="kpi"><b>{% if stats.median_pay %}${{ "{:,}".format(stats.median_pay) }}{% else %}n/a{% endif %}</b><span>median stated pay, USD/month</span></div>
+    <div class="kpi"><b>{{ stats.scanned }}</b><span>roles scanned after de-duplication</span></div>
+  </section>
+
+  <section class="controls" aria-label="Filters">
+    <input type="search" id="q" placeholder="Search role, company, stack…" aria-label="Search">
+    <select id="track" aria-label="Track">
+      <option value="">All tracks</option>
+      {% for key, short in tracks %}<option value="{{ key }}">{{ short }}</option>{% endfor %}
+    </select>
+    <select id="type" aria-label="Engagement">
+      <option value="">Any engagement</option>
+      <option value="contract">Contract / B2B</option>
+      <option value="part_time">Part-time</option>
+      <option value="full_time">Full-time</option>
+    </select>
+    <label>Min score <input type="range" id="min" min="0" max="90" step="5" value="0"> <span id="minv">0</span></label>
+    <label><input type="checkbox" id="excluded"> Show excluded</label>
+    <span class="count" id="count"></span>
+  </section>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Score</th><th>Role</th><th class="hide-sm">Track</th><th>Pay / mo</th>
+          <th class="hide-sm">Location</th><th class="hide-sm">Type</th><th class="hide-sm">Posted</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>Listings belong to their publishers and every link goes to the original posting.
+    Sources:
+    {% for s in sources %}<a href="{{ s.homepage }}" rel="noopener">{{ s.label }}</a>{% if s.error %} (unavailable this run){% endif %}{% if not loop.last %}, {% endif %}{% endfor %}.
+    Pay is normalised to USD per month with approximate exchange rates; hourly and daily rates are shown as full-time equivalents.</p>
+    <p>Generated by remote-radar {{ version }}.</p>
+  </footer>
+</main>
+
+<script id="data" type="application/json">{{ rows|tojson }}</script>
+<script>
+(() => {
+  const rows = JSON.parse(document.getElementById("data").textContent);
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, attrs = {}, text) => {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+    if (text !== undefined) node.textContent = text;
+    return node;
+  };
+  const state = { q: "", track: "", type: "", min: 0, excluded: false };
+
+  function pay(r) {
+    if (!r.monthly_usd) return "n/a";
+    return "$" + r.monthly_usd.toLocaleString("en-US") + (r.salary_approx ? " ≈" : "");
+  }
+  function posted(r) {
+    if (r.age_days === null) return "n/a";
+    return r.age_days === 0 ? "today" : r.age_days + "d ago";
+  }
+  function matches(r) {
+    if (!state.excluded && !r.eligible) return false;
+    if (r.score < state.min) return false;
+    if (state.track && r.track !== state.track) return false;
+    if (state.type && r.engagement !== state.type) return false;
+    if (state.q) {
+      const hay = [r.title, r.company, r.location, r.source, ...r.terms].join(" ").toLowerCase();
+      if (!hay.includes(state.q)) return false;
+    }
+    return true;
+  }
+
+  function render() {
+    const body = $("rows");
+    body.replaceChildren();
+    const list = rows.filter(matches);
+    $("count").textContent = list.length + " shown";
+    for (const r of list.slice(0, 600)) {
+      const tr = el("tr", { class: "job" + (r.eligible ? "" : " excluded"), tabindex: "0" });
+      const score = el("span", { class: "score " + (r.score >= 70 ? "hi" : r.score >= 50 ? "mid" : "") }, String(r.score));
+      const tdScore = el("td", { class: "num" }); tdScore.append(score);
+      const tdRole = el("td", { class: "role" });
+      const link = el("a", { href: r.url, target: "_blank", rel: "noopener" }, r.title);
+      link.addEventListener("click", (e) => e.stopPropagation());
+      tdRole.append(link, el("div", { class: "company" }, r.company + " · via " + r.source));
+      const tdTrack = el("td", { class: "hide-sm" });
+      if (r.track_short) tdTrack.append(el("span", { class: "chip" }, r.track_short));
+      tr.append(tdScore, tdRole, tdTrack,
+        el("td", { class: "num" }, pay(r)),
+        el("td", { class: "hide-sm" }, r.location),
+        el("td", { class: "hide-sm" }, r.engagement_label),
+        el("td", { class: "hide-sm num" }, posted(r)));
+      const details = el("tr", { class: "details", hidden: "" });
+      const td = el("td", { colspan: "7" });
+      const ul = el("ul");
+      for (const reason of r.reasons) ul.append(el("li", {}, reason));
+      td.append(ul);
+      if (r.flags.length) td.append(el("div", { class: "flag" }, "Flags: " + r.flags.join(", ")));
+      if (r.also_on.length) td.append(el("div", {}, "Also listed on: " + r.also_on.join(", ")));
+      if (r.apply_url && r.apply_url !== r.url) {
+        const apply = el("a", { href: r.apply_url, target: "_blank", rel: "noopener" }, "Apply on the company site");
+        const wrap = el("div"); wrap.append(apply); td.append(wrap);
+      }
+      details.append(td);
+      const toggle = () => { details.hidden = !details.hidden; };
+      tr.addEventListener("click", toggle);
+      tr.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+      body.append(tr, details);
+    }
+  }
+
+  $("q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
+  $("track").addEventListener("change", (e) => { state.track = e.target.value; render(); });
+  $("type").addEventListener("change", (e) => { state.type = e.target.value; render(); });
+  $("min").addEventListener("input", (e) => { state.min = Number(e.target.value); $("minv").textContent = e.target.value; render(); });
+  $("excluded").addEventListener("change", (e) => { state.excluded = e.target.checked; render(); });
+  render();
+})();
+</script>
+</body>
+</html>
