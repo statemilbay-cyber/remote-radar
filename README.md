@@ -4,26 +4,26 @@ Remote Radar pulls remote engineering roles from six public job feeds, normalise
 into one schema, scores every role against a declarative candidate profile, and publishes
 the result as a static dashboard that rebuilds itself every morning on GitHub Actions.
 
-A run on 18 November 2026 (UTC+6 profile, worldwide-only roles, $1,500/month floor):
+A run on 18 November 2026 (UTC+6 profile, resident in Kyrgyzstan, $1,500/month floor):
 
 ```
 $ uv run radar run --profile me.local.toml --top 3
   Remote OK                         97 jobs
   Remotive                          16 jobs
-  Himalayas                        272 jobs
-  Jobicy                           223 jobs
+  Himalayas                        964 jobs
+  Jobicy                           229 jobs
   We Work Remotely                 143 jobs
   Hacker News · Who is hiring?     121 jobs
 
-838 unique roles, 36 match the profile.
+1444 unique roles, 38 match the profile.
 
  #  SCORE  TRACK           PAY/MO  TYPE       ROLE
  1     91  Python         $12,083  Full-time  Sr. Data Engineer · Carrot
- 2     85  Integrations    $7,000  Full-time  AI Automation Expert (n8n / Make / Zapier / AI Agents) · Kreative…
- 3     78  Python          $5,000  Full-time  Agentic Python Engineer · Evaboot
+ 2     89  Integrations    $3,500  Contract   Full-Stack Developer · Fluence International, Inc.
+ 3     85  Integrations    $7,000  Full-time  AI Automation Expert (n8n / Make / Zapier / AI Agents) · Kreative…
 ```
 
-Most of the 802 excluded roles are open only to residents of specific countries; the
+Most of the 1,406 excluded roles are open only to residents of specific countries; the
 dashboard keeps them, each with the rule that excluded it.
 
 ## Why it exists

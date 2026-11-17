@@ -26,15 +26,22 @@ class Himalayas:
         "playwright", "qa automation", "sdet", "test automation", "python developer",
         "data engineer", "web scraping", "full stack typescript", "telegram", "n8n",
         "workflow automation", "integration engineer", "automation engineer", "backend python",
+        "ai engineer", "zapier", "data pipeline", "python automation",
     )  # fmt: skip
+    pages = 3  # 20 results per page; later pages are older
 
     def fetch(self, http: HttpClient) -> Iterator[Job]:
         for query in self.queries:
-            payload = http.get_json(self.endpoint, params={"q": query})
-            for item in payload.get("jobs", []) if isinstance(payload, dict) else []:
-                job = parse_item(item)
-                if job is not None:
-                    yield job
+            for page in range(1, self.pages + 1):
+                params = {"q": query} if page == 1 else {"q": query, "page": page}
+                payload = http.get_json(self.endpoint, params=params)
+                items = payload.get("jobs", []) if isinstance(payload, dict) else []
+                for item in items:
+                    job = parse_item(item)
+                    if job is not None:
+                        yield job
+                if len(items) < 20:
+                    break  # last page
 
 
 def parse_item(item: Any) -> Job | None:

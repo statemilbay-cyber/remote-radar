@@ -17,9 +17,11 @@ if TYPE_CHECKING:
     from .profile import Profile
 
 _REGION_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    # "anywhere" counts only on its own or as "anywhere in the world": "anywhere in the US" is
+    # a regional restriction, not a worldwide role.
     ("worldwide", re.compile(
-        r"\b(world\s*-?\s*wide|anywhere|global(ly)?|any\s+(time\s*zone|location|country)|"
-        r"all\s+countries|international)\b", re.I)),
+        r"\b(world\s*-?\s*wide|anywhere(?!\s+(?:in|within)\s+(?!the\s+world))|global(ly)?|"
+        r"any\s+(time\s*zone|location|country)|all\s+countries|international)\b", re.I)),
     ("us", re.compile(r"\b(united\s+states|usa|us[- ](only|based))\b|\bu\.s\.(a\.)?", re.I)),
     ("us", re.compile(r"\bUS\b")),
     ("canada", re.compile(r"\bcanada\b", re.I)),
@@ -233,11 +235,15 @@ _LOCATION_LINE_RE = re.compile(
     r"|^\s*headquarters\s*:\s*(.*\bremote\b.*)$"  # "Headquarters: Remote - United States"
 )
 _RESIDENCY_RE = re.compile(
-    r"(?i)\b(?:must\s+(?:be\s+)?(?:based|located|resid\w*|living)\s+in"
+    r"(?i)\b(?:(?:must|can|should)\s+(?:be\s+)?(?:based|located|resid\w*|living)\s+"
+    r"(?:anywhere\s+)?in"
     r"|required\s+to\s+be\s+based\s+in"
     r"|(?:this\s+(?:role|position)\s+is\s+)?remote\s+(?:in|within)\s+the"
     r"|(?:legally\s+)?(?:eligible|authori[sz]ed)\s+to\s+work\s+in)\b[^.\n]{0,120}"
 )
+# "Engineer - Remote (United States)", "Remote, EU", "Remote – Canada". The place must start
+# with a capital letter, so "remote-first" or "remote, flexible hours" never match.
+_REMOTE_PLACE_RE = re.compile(r"\b(?i:remote)\s*(?:\(\s*|,\s*|\s+[-–]\s+)[A-Z][\w .'-]{1,40}")
 
 
 # "Headquarters: Remote - MX" style two-letter codes seen on job boards.
@@ -256,6 +262,7 @@ def residency_text(description: str) -> str:
         return ""
     parts = [m.group(1) or m.group(2) for m in _LOCATION_LINE_RE.finditer(description)]
     parts += [m.group(0) for m in _RESIDENCY_RE.finditer(description)]
+    parts += [m.group(0) for m in _REMOTE_PLACE_RE.finditer(description)]
     text = "\n".join(p for p in parts if p)
     return _REMOTE_CODE_RE.sub(
         lambda m: f"Remote - {_ISO2.get(m.group(1).upper(), m.group(1))}", text

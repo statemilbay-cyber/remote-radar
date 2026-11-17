@@ -33,7 +33,7 @@ exclude_titles = [
   "accountant", "bookkeeper", "paralegal", "attorney", "lawyer", "counsel", "human resources",
   "people partner", "office manager", "executive assistant", "virtual assistant", "data entry",
   "product manager", "project manager", "program manager", "scrum master", "community manager",
-  "social media",
+  "social media", "lending", "loan officer", "mortgage", "underwriter", "insurance agent",
 ]
 # Engineering specialisms outside the tracks below. Such titles pass only when they also
 # name a track term ("DevOps / Python Engineer" passes, "Senior DevOps Engineer" does not).

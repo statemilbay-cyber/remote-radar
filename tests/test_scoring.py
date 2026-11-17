@@ -116,3 +116,10 @@ def test_talent_networks_are_flagged_and_pushed_down() -> None:
     network = assess(make_job(company="Lemon.io"), PROFILE, now=NOW)
     assert "talent_network" in network.flags
     assert network.score < direct.score
+
+
+def test_non_engineering_manager_with_tech_words_is_excluded() -> None:
+    job = make_job(
+        title="Lending Manager (Front End) - Remote", description="Lead loan assistants."
+    )
+    assert "non_engineering" in assess(job, PROFILE, now=NOW).flags

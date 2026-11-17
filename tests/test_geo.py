@@ -122,3 +122,34 @@ def test_two_letter_country_codes_in_remote_headquarters() -> None:
     assert not assess_location(
         job(location="Anywhere in the World", description=description), PROFILE
     ).eligible
+
+
+@pytest.mark.parametrize(
+    "description",
+    [
+        "Full-Stack Engineer, Part-Time AI Code Evaluation - Remote (United States)",
+        "This is a remote position that can be located anywhere in the US or Canada.",
+    ],
+)
+def test_regional_remote_phrasing_is_a_restriction(description: str) -> None:
+    verdict = assess_location(
+        job(location="Anywhere in the World", description=description), PROFILE
+    )
+    assert not verdict.eligible
+
+
+def test_anywhere_in_the_world_stays_worldwide() -> None:
+    verdict = assess_location(
+        job(location="Remote", description="You can be based anywhere in the world."), PROFILE
+    )
+    assert verdict.eligible
+
+
+def test_remote_first_is_not_a_place() -> None:
+    description = "Headquarters: Remote Poland\nWe are remote-first, a global team."
+    assert not assess_location(
+        job(location="Anywhere in the World", description=description), PROFILE
+    ).eligible
+    assert assess_location(
+        job(location="Worldwide", description="Remote-first, global team."), PROFILE
+    ).eligible

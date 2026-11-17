@@ -28,6 +28,10 @@ class Jobicy:
         {"count": 50, "tag": "qa"},
         {"count": 50, "tag": "automation"},
         {"count": 50, "tag": "typescript"},
+        # Roles open worldwide are rare; ask for them explicitly so none are crowded out.
+        {"count": 50, "geo": "anywhere", "industry": "dev"},
+        {"count": 50, "geo": "anywhere", "tag": "python"},
+        {"count": 50, "geo": "anywhere", "tag": "automation"},
     )
 
     def fetch(self, http: HttpClient) -> Iterator[Job]:
